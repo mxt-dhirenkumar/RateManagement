@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -33,9 +34,10 @@ public class Rate {
     @Positive
     private Integer nights;  // always >0
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime bookDateFrom; // when client registered this rate
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime bookDateTo;  // null if active, set when closed
 
     //  Business rule: stayDateFrom <= stayDateTo

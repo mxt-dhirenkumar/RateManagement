@@ -24,5 +24,11 @@ public class RateController {
         return ResponseEntity.ok(saved);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Rate> updateRate(@PathVariable("id") Long id, @RequestBody Rate rate) {
+        Rate updated = service.updateRate(id, rate);
+        return ResponseEntity.ok(updated);
+    }
+
 
 }

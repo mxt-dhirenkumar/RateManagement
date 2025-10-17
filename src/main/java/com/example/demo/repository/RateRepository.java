@@ -12,14 +12,28 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
     List<Rate> findByBungalowIdAndBookDateToIsNullOrderByStayDateFromAsc(Long bungalowId);
 
     // 2️⃣ Find previous active rate (the closest one before new stayDateFrom)
-    Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateToLessThanOrderByStayDateToDesc(
-            Long bungalowId, LocalDate stayDateFrom);
+    Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateToEqualsAndValueAndNightsOrderByStayDateToDesc(
+            Long bungalowId,
+            LocalDate stayDateFromMinusOne, // previous.stayDateTo = newRate.stayDateFrom - 1
+            Long value,
+            Integer nights
+    );
+
 
     // 3️⃣ Find next active rate (the closest one after new stayDateTo)
-    Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateFromGreaterThanOrderByStayDateFromAsc(
-            Long bungalowId, LocalDate stayDateTo);
+    Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateFromEqualsAndValueAndNightsOrderByStayDateFromAsc(
+            Long bungalowId,
+            LocalDate stayDateToPlusOne, // next.stayDateFrom = newRate.stayDateTo + 1
+            Long value,
+            Integer nights
+    );
+
 
     // 4️⃣ Find all active rates overlapping a given date range
     List<Rate> findByBungalowIdAndBookDateToIsNullAndStayDateFromLessThanEqualAndStayDateToGreaterThanEqual(
             Long bungalowId, LocalDate stayDateTo, LocalDate stayDateFrom);
+
+    // 5️⃣ Find all active rates with the same value and nights overlapping a given date range
+    List<Rate> findByBungalowIdAndBookDateToIsNullAndValueAndNights(
+            Long bungalowId, Long value, Integer nights);
 }

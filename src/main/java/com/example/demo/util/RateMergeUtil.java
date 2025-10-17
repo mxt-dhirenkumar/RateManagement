@@ -11,33 +11,40 @@ public class RateMergeUtil {
     public static Rate mergeNeighbors(Rate newRate, RateRepository repository) {
         LocalDateTime now = LocalDateTime.now();
 
-        Optional<Rate> prevOpt = repository.findTopByBungalowIdAndBookDateToIsNullAndStayDateToLessThanOrderByStayDateToDesc(
-                newRate.getBungalowId(), newRate.getStayDateFrom());
-        Optional<Rate> nextOpt = repository.findTopByBungalowIdAndBookDateToIsNullAndStayDateFromGreaterThanOrderByStayDateFromAsc(
-                newRate.getBungalowId(), newRate.getStayDateTo());
+        // Previous neighbor: stayDateTo = newRate.stayDateFrom - 1
+        Optional<Rate> prevOpt = repository.findTopByBungalowIdAndBookDateToIsNullAndStayDateToEqualsAndValueAndNightsOrderByStayDateToDesc(
+                newRate.getBungalowId(),
+                newRate.getStayDateFrom().minusDays(1),
+                newRate.getValue(),
+                newRate.getNights()
+        );
+
+        // Next neighbor: stayDateFrom = newRate.stayDateTo + 1
+        Optional<Rate> nextOpt = repository.findTopByBungalowIdAndBookDateToIsNullAndStayDateFromEqualsAndValueAndNightsOrderByStayDateFromAsc(
+                newRate.getBungalowId(),
+                newRate.getStayDateTo().plusDays(1),
+                newRate.getValue(),
+                newRate.getNights()
+        );
 
         boolean merged = false;
 
         // Merge with previous
         if (prevOpt.isPresent()) {
             Rate prev = prevOpt.get();
-            if (prev.getValue().equals(newRate.getValue()) && prev.getNights().equals(newRate.getNights())) {
-                newRate.setStayDateFrom(prev.getStayDateFrom());
-                prev.setBookDateTo(now);
-                repository.save(prev);
-                merged = true;
-            }
+            newRate.setStayDateFrom(prev.getStayDateFrom());
+            prev.setBookDateTo(now);
+            repository.save(prev);
+            merged = true;
         }
 
         // Merge with next
         if (nextOpt.isPresent()) {
             Rate next = nextOpt.get();
-            if (next.getValue().equals(newRate.getValue()) && next.getNights().equals(newRate.getNights())) {
-                newRate.setStayDateTo(next.getStayDateTo());
-                next.setBookDateTo(now);
-                repository.save(next);
-                merged = true;
-            }
+            newRate.setStayDateTo(next.getStayDateTo());
+            next.setBookDateTo(now);
+            repository.save(next);
+            merged = true;
         }
 
         // Save the new merged rate
@@ -47,4 +54,5 @@ public class RateMergeUtil {
 
         return newRate;
     }
+
 }
