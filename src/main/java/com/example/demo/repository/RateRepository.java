@@ -36,4 +36,5 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
     // 5️⃣ Find all active rates with the same value and nights overlapping a given date range
     List<Rate> findByBungalowIdAndBookDateToIsNullAndValueAndNights(
             Long bungalowId, Long value, Integer nights);
+
 }
