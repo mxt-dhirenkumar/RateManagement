@@ -13,15 +13,11 @@ public abstract class AbstractFakeRateRepository implements RateRepository {
 
     @Override
     public Rate save(Rate rate) {
-        // if rate already exists, update; else add
-        int index = db.indexOf(rate);
-        if (index >= 0) {
-            db.set(index, rate);
-        } else {
-            db.add(rate);
-        }
+        db.removeIf(r -> r.equals(rate)); // remove old if exists
+        db.add(rate);                     // add updated
         return rate;
     }
+
 
     // other methods throw UnsupportedOperationException
 }
