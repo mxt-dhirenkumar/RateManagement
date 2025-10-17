@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/rate_management_db?useSSL=false&serverTimezone=UTC
+    username: root
+    password: Dhiren@123
+  jpa:
+    hibernate:
+      ddl-auto: update   # in dev only; use validate or none for production
+    show-sql: false      # true in dev if you want SQL logging
+    properties:
+      hibernate.format_sql: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG   # optional, helpful for debugging queries
+
