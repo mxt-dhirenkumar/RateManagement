@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,22 +28,42 @@ public class InMemoryRateRepository extends AbstractFakeRateRepository {
     }
 
     // Only implement methods used by RateSplitUtil
+    @Override
     public List<Rate> findByBungalowIdAndBookDateToIsNullOrderByStayDateFromAsc(Long bungalowId) {
+        List<Rate> result = new ArrayList<>();
+        for (Rate r : db) {
+            if (r.getBungalowId().equals(bungalowId) && r.getBookDateTo() == null) {
+                result.add(r);
+            }
+        }
+        result.sort((a, b) -> a.getStayDateFrom().compareTo(b.getStayDateFrom()));
+        return result;
+    }
+
+    @Override
+    public Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateToEqualsAndValueAndNightsOrderByStayDateToDesc(
+            Long bungalowId, LocalDate stayDateFromMinusOne, Long value, Integer nights) {
         return db.stream()
-                .filter(r -> r.getBungalowId().equals(bungalowId) && r.getBookDateTo() == null)
-                .sorted((r1, r2) -> r1.getStayDateFrom().compareTo(r2.getStayDateFrom()))
-                .collect(Collectors.toList());
+                .filter(r -> r.getBungalowId().equals(bungalowId)
+                        && r.getBookDateTo() == null
+                        && r.getStayDateTo().equals(stayDateFromMinusOne)
+                        && r.getValue().equals(value)
+                        && r.getNights().equals(nights))
+                .findFirst();
     }
 
     @Override
-    public Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateToEqualsAndValueAndNightsOrderByStayDateToDesc(Long bungalowId, LocalDate stayDateFromMinusOne, Long value, Integer nights) {
-        return Optional.empty();
+    public Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateFromEqualsAndValueAndNightsOrderByStayDateFromAsc(
+            Long bungalowId, LocalDate stayDateToPlusOne, Long value, Integer nights) {
+        return db.stream()
+                .filter(r -> r.getBungalowId().equals(bungalowId)
+                        && r.getBookDateTo() == null
+                        && r.getStayDateFrom().equals(stayDateToPlusOne)
+                        && r.getValue().equals(value)
+                        && r.getNights().equals(nights))
+                .findFirst();
     }
 
-    @Override
-    public Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateFromEqualsAndValueAndNightsOrderByStayDateFromAsc(Long bungalowId, LocalDate stayDateToPlusOne, Long value, Integer nights) {
-        return Optional.empty();
-    }
 
     @Override
     public List<Rate> findByBungalowIdAndBookDateToIsNullAndStayDateFromLessThanEqualAndStayDateToGreaterThanEqual(Long bungalowId, LocalDate stayDateTo, LocalDate stayDateFrom) {
@@ -54,6 +74,7 @@ public class InMemoryRateRepository extends AbstractFakeRateRepository {
     public List<Rate> findByBungalowIdAndBookDateToIsNullAndValueAndNights(Long bungalowId, Long value, Integer nights) {
         return List.of();
     }
+
 
     @Override
     public void flush() {
