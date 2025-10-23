@@ -34,10 +34,10 @@ public class Rate {
     @Positive
     private Integer nights;  // always >0
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookDateFrom; // when client registered this rate
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookDateTo;  // null if active, set when closed
 
     //  Business rule: stayDateFrom <= stayDateTo

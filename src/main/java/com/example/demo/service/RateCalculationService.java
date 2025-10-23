@@ -1,44 +1,47 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.RateCalculationRequest;
+import com.example.demo.dto.RateCalculationResponse;
 import com.example.demo.entity.Rate;
 import com.example.demo.repository.RateRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class RateCalculationService {
 
     private final RateRepository rateRepository;
 
-    public long calculateTotalPrice(Long bungalowId, LocalDate stayFrom, LocalDate stayTo) {
-        if (stayTo.isBefore(stayFrom)) {
-            throw new IllegalArgumentException("Departure date cannot be before arrival date.");
+    public RateCalculationService(RateRepository rateRepository) {
+        this.rateRepository = rateRepository;
+    }
+
+    public RateCalculationResponse calculatePrice(RateCalculationRequest request) {
+        // Convert bookingDate to string in seconds
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String bookingDateStr = request.getBookingDate().format(formatter);
+
+        // Fetch relevant rates using truncated query
+        List<Rate> rates = rateRepository.findRatesByBookingDateTruncated(request.getBungalowId(), bookingDateStr);
+
+        if (rates.isEmpty()) {
+            return new RateCalculationResponse(request.getBungalowId(), 0L, "No rates found for this booking date.");
         }
 
-        // 1️⃣ Fetch overlapping active rates
-        List<Rate> rates = rateRepository
-                .findByBungalowIdAndBookDateToIsNullAndStayDateFromLessThanEqualAndStayDateToGreaterThanEqual(
-                        bungalowId, stayTo, stayFrom);
+        long totalAmount = 0;
 
-        long total = 0;
-
-        // 2️⃣ Calculate total per rate
         for (Rate rate : rates) {
-            LocalDate overlapStart = stayFrom.isAfter(rate.getStayDateFrom()) ? stayFrom : rate.getStayDateFrom();
-            LocalDate overlapEnd = stayTo.isBefore(rate.getStayDateTo()) ? stayTo : rate.getStayDateTo();
+            // Calculate overlap between stay dates and rate stay dates
+            long days = Math.min(rate.getStayDateTo().toEpochDay(), request.getStayDateTo().toEpochDay())
+                    - Math.max(rate.getStayDateFrom().toEpochDay(), request.getStayDateFrom().toEpochDay()) + 1;
 
-            long days = ChronoUnit.DAYS.between(overlapStart, overlapEnd) + 1;
             if (days > 0) {
-                total += days * rate.getValue();
+                totalAmount += days * rate.getValue();
             }
         }
 
-        return total;
+        return new RateCalculationResponse(request.getBungalowId(), totalAmount, "Price calculated successfully");
     }
 }
-
