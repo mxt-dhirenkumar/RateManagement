@@ -10,20 +10,26 @@ import java.util.List;
 public class RateValidationUtil {
 
     public static void checkDuplicate(Rate newRate, RateRepository repository) {
-        List<Rate> duplicates = repository.findByBungalowIdAndBookDateToIsNullAndValueAndNights(
-                        newRate.getBungalowId(),
-                        newRate.getValue(),
-                        newRate.getNights()
-                ).stream()
-                .filter(r -> {
-                    LocalDate existingFrom = r.getStayDateFrom();
-                    LocalDate existingTo = r.getStayDateTo() != null ? r.getStayDateTo() : LocalDate.MAX;
-                    return !existingTo.isBefore(newRate.getStayDateFrom())
-                            && !existingFrom.isAfter(newRate.getStayDateTo());
-                })
-                .toList();
+        List<Rate> activeRates = repository.findByBungalowIdAndBookDateToIsNullAndValueAndNights(
+                newRate.getBungalowId(),
+                newRate.getValue(),
+                newRate.getNights()
+        );
 
-        if (!duplicates.isEmpty()) {
+        boolean hasExactDuplicate = activeRates.stream()
+                .anyMatch(existing -> {
+                    LocalDate existingFrom = existing.getStayDateFrom();
+                    LocalDate existingTo = existing.getStayDateTo() != null ? existing.getStayDateTo() : LocalDate.MAX;
+
+                    // Treat as duplicate only if new range is fully inside the existing range
+                    boolean fullyInside =
+                            !newRate.getStayDateFrom().isBefore(existingFrom) &&
+                                    !newRate.getStayDateTo().isAfter(existingTo);
+
+                    return fullyInside;
+                });
+
+        if (hasExactDuplicate) {
             throw new DuplicateRateException("Duplicate rate exists for the given period!");
         }
     }
