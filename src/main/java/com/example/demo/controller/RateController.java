@@ -30,5 +30,26 @@ public class RateController {
         return ResponseEntity.ok(updated);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Rate>> getAllRates() {
+        return ResponseEntity.ok(service.getAllRates());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Rate> getRateById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getRateById(id));
+    }
+
+    @GetMapping("/bungalow/{bungalowId}")
+    public ResponseEntity<List<Rate>> getRatesByBungalowId(@PathVariable Long bungalowId) {
+        return ResponseEntity.ok(service.getRatesByBungalowId(bungalowId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRate(@PathVariable Long id) {
+        service.deleteRate(id);
+        return ResponseEntity.ok("Rate closed successfully.");
+    }
+
 
 }

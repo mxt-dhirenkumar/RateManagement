@@ -37,4 +37,7 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
     List<Rate> findByBungalowIdAndBookDateToIsNullAndValueAndNights(
             Long bungalowId, Long value, Integer nights);
 
+    // 6 ️⃣ Find all rates for a bungalow
+    List<Rate> findByBungalowId(Long bungalowId);
+
 }

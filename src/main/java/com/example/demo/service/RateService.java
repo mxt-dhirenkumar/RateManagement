@@ -61,4 +61,25 @@ public class RateService {
         // Call createRate for updated data
         return createRate(updatedRate);
     }
+
+    public void deleteRate(Long id) {
+        Rate rate = repository.findById(id)
+                .orElseThrow(() -> new RateNotFoundException("Rate not found with id: " + id));
+
+        rate.setBookDateTo(LocalDateTime.now());
+        repository.save(rate);
+    }
+
+    public List<Rate> getAllRates() {
+        return repository.findAll();
+    }
+
+    public Rate getRateById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RateNotFoundException("Rate not found with id: " + id));
+    }
+
+    public List<Rate> getRatesByBungalowId(Long bungalowId) {
+        return repository.findByBungalowId(bungalowId);
+    }
 }
