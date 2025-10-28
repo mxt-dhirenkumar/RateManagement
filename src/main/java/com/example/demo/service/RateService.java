@@ -24,11 +24,12 @@ public class RateService {
     @Transactional
     public Rate createRate(Rate rate) {
 
+        // Normalize value and nights
+        RateNormalizeUtil.normalize(rate);
+
         // Check for duplicates
         RateValidationUtil.checkDuplicate(rate, repository);
 
-        // Normalize value and nights
-        RateNormalizeUtil.normalize(rate);
         rate.setBookDateFrom(LocalDateTime.now());
 
         // Find overlapping active rates

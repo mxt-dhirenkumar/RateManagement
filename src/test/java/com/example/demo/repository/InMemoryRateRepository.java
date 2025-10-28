@@ -75,6 +75,11 @@ public class InMemoryRateRepository extends AbstractFakeRateRepository {
         return List.of();
     }
 
+    @Override
+    public List<Rate> findByBungalowId(Long bungalowId) {
+        return List.of();
+    }
+
 
     @Override
     public void flush() {
