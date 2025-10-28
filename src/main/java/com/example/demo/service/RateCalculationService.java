@@ -18,6 +18,11 @@ public class RateCalculationService {
 
 
     public RateCalculationResponse calculatePrice(RateCalculationRequest request) {
+
+        if (!request.getBookingDate().toLocalDate().isBefore(request.getStayDateFrom())) {
+            throw new IllegalArgumentException("Booking date must be before stay start date");
+        }
+
         // Convert bookingDate to string in seconds
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String bookingDateStr = request.getBookingDate().format(formatter);
