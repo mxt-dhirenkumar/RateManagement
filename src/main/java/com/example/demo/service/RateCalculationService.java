@@ -4,6 +4,7 @@ import com.example.demo.dto.RateCalculationRequest;
 import com.example.demo.dto.RateCalculationResponse;
 import com.example.demo.entity.Rate;
 import com.example.demo.repository.RateRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -12,11 +13,9 @@ import java.util.List;
 @Service
 public class RateCalculationService {
 
-    private final RateRepository rateRepository;
+    @Autowired
+    private RateRepository rateRepository;
 
-    public RateCalculationService(RateRepository rateRepository) {
-        this.rateRepository = rateRepository;
-    }
 
     public RateCalculationResponse calculatePrice(RateCalculationRequest request) {
         // Convert bookingDate to string in seconds

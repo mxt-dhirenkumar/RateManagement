@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.RateCalculationRequest;
 import com.example.demo.dto.RateCalculationResponse;
 import com.example.demo.service.RateCalculationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/rates")
 public class RateCalculationController {
 
-    private final RateCalculationService rateCalculationService;
+    @Autowired
+    private RateCalculationService rateCalculationService;
 
-    public RateCalculationController(RateCalculationService rateCalculationService) {
-        this.rateCalculationService = rateCalculationService;
-    }
 
     @PostMapping("/calculate")
     public ResponseEntity<RateCalculationResponse> calculateBill(@RequestBody RateCalculationRequest request) {
