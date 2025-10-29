@@ -6,6 +6,20 @@ import com.example.demo.repository.RateRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * Utility class for merging adjacent Rate entities in the database.
+ * <p>
+ * The main method, {@code mergeNeighbors}, attempts to merge a new Rate with its
+ * immediate neighbors (previous and next) if they have contiguous date ranges,
+ * the same value, and the same number of nights.
+ * <ul>
+ *   <li>If a previous neighbor exists (ending the day before the new Rate starts), it extends the new Rate's start date and marks the previous neighbor as merged.</li>
+ *   <li>If a next neighbor exists (starting the day after the new Rate ends), it extends the new Rate's end date and marks the next neighbor as merged.</li>
+ *   <li>After merging, the updated new Rate is saved to the repository.</li>
+ * </ul>
+ * This helps to keep the Rate records compact and avoid fragmentation of date ranges.
+ */
+
 public class RateMergeUtil {
 
     public static Rate mergeNeighbors(Rate newRate, RateRepository repository) {

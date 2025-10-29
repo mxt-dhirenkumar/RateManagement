@@ -7,6 +7,18 @@ import com.example.demo.repository.RateRepository;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Utility class for validating {@link Rate} entities to prevent duplicates.
+ * <p>
+ * The {@code checkDuplicate} method checks if a new {@code Rate} overlaps exactly with any existing
+ * active rate (same bungalow, value, and nights) in the repository. It retrieves all active rates
+ * matching the new rate's attributes and determines if the new rate's date range is fully contained
+ * within any existing rate's date range. If such a duplicate is found, a {@link DuplicateRateException}
+ * is thrown to prevent insertion of redundant rates.
+ * <p>
+ * This ensures data integrity by avoiding duplicate rate entries for the same period and attributes.
+ */
+
 public class RateValidationUtil {
 
     public static void checkDuplicate(Rate newRate, RateRepository repository) {

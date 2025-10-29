@@ -7,6 +7,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Utility class for splitting overlapping {@link Rate} entities.
+ * <p>
+ * The {@code splitIfOverlapping} method processes a new {@code Rate} and a list of existing overlapping rates.
+ * For each overlapping rate:
+ * <ul>
+ *   <li>It closes the old rate by setting its booking end date to now and saving it.</li>
+ *   <li>If the old rate starts before the new rate, it creates and saves a left segment for the non-overlapping period before the new rate.</li>
+ *   <li>If the old rate ends after the new rate, it creates and saves a right segment for the non-overlapping period after the new rate.</li>
+ * </ul>
+ * This ensures that the date ranges of rates do not overlap, maintaining data consistency in the repository.
+ */
+
 public class RateSplitUtil {
 
     public static void splitIfOverlapping(Rate newRate, List<Rate> overlappingRates, RateRepository repository) {
