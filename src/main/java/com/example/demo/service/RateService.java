@@ -30,7 +30,7 @@ public class RateService {
         // Check for duplicates
         RateValidationUtil.checkDuplicate(rate, repository);
 
-        //(Optional : if user want to insert BookDateFrom that time you can remove this line)
+        //(Optional : if user want to insert BookDateFrom ( means you want flexible bookDateFrom) that time you can remove this line)
         rate.setBookDateFrom(LocalDateTime.now());
 
         // Find overlapping active rates
