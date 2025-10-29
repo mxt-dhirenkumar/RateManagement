@@ -40,7 +40,7 @@ public class RateCalculationService {
             // Calculate overlap between stay dates and rate stay dates
             // we find stayDateTo min and stayDateFrom max to find the overlapping days
             long days = Math.min(rate.getStayDateTo().toEpochDay(), request.getStayDateTo().toEpochDay())
-                    - Math.max(rate.getStayDateFrom().toEpochDay(), request.getStayDateFrom().toEpochDay()) + 1;
+                    - Math.max(rate.getStayDateFrom().toEpochDay(), request.getStayDateFrom().toEpochDay()) ;
 
             if (days > 0) {
                 totalAmount += days * rate.getValue();
