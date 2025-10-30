@@ -29,7 +29,7 @@ public class RateService {
 
         // Normalize value and nights
         RateNormalizeUtil.normalize(rate);
-        rate.setBookDateFrom(LocalDateTime.now());
+
 
         // Find overlapping active rates
         List<Rate> overlapping = repository.findByBungalowIdAndBookDateToIsNullAndStayDateFromLessThanEqualAndStayDateToGreaterThanEqual(
@@ -55,7 +55,7 @@ public class RateService {
                 .orElseThrow(() -> new RateNotFoundException("Rate not found with id: " + rateId));
 
         // Close the existing rate
-        existing.setBookDateTo(LocalDateTime.now());
+        existing.setBookDateTo(updatedRate.getBookDateFrom());
         repository.save(existing);
 
         // Call createRate for updated data

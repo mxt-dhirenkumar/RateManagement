@@ -23,12 +23,12 @@ import java.util.List;
 public class RateSplitUtil {
 
     public static void splitIfOverlapping(Rate newRate, List<Rate> overlappingRates, RateRepository repository) {
-        LocalDateTime now = LocalDateTime.now();
+        //LocalDateTime now = LocalDateTime.now();
 
         for (Rate oldRate : overlappingRates) {
 
             // Close old rate
-            oldRate.setBookDateTo(now);
+            oldRate.setBookDateTo(newRate.getBookDateFrom());
             repository.save(oldRate);
 
             // Left piece (before newRate)
@@ -39,7 +39,7 @@ public class RateSplitUtil {
                 left.setStayDateTo(newRate.getStayDateFrom().minusDays(1));
                 left.setValue(oldRate.getValue());
                 left.setNights(oldRate.getNights());
-                left.setBookDateFrom(now);
+                left.setBookDateFrom(newRate.getBookDateFrom());
                 repository.save(left);
             }
 
@@ -51,7 +51,7 @@ public class RateSplitUtil {
                 right.setStayDateTo(oldRate.getStayDateTo());
                 right.setValue(oldRate.getValue());
                 right.setNights(oldRate.getNights());
-                right.setBookDateFrom(now);
+                right.setBookDateFrom(newRate.getBookDateFrom());
                 repository.save(right);
             }
         }

@@ -23,7 +23,7 @@ import java.util.Optional;
 public class RateMergeUtil {
 
     public static Rate mergeNeighbors(Rate newRate, RateRepository repository) {
-        LocalDateTime now = LocalDateTime.now();
+        //LocalDateTime now = LocalDateTime.now();
 
         // Previous neighbor: stayDateTo = newRate.stayDateFrom - 1
         Optional<Rate> prevOpt = repository.findTopByBungalowIdAndBookDateToIsNullAndStayDateToEqualsAndValueAndNightsOrderByStayDateToDesc(
@@ -47,7 +47,7 @@ public class RateMergeUtil {
         if (prevOpt.isPresent()) {
             Rate prev = prevOpt.get();
             newRate.setStayDateFrom(prev.getStayDateFrom());
-            prev.setBookDateTo(now);
+            prev.setBookDateTo(newRate.getBookDateFrom());
             repository.save(prev);
             merged = true;
         }
@@ -56,7 +56,7 @@ public class RateMergeUtil {
         if (nextOpt.isPresent()) {
             Rate next = nextOpt.get();
             newRate.setStayDateTo(next.getStayDateTo());
-            next.setBookDateTo(now);
+            next.setBookDateTo(newRate.getBookDateFrom());
             repository.save(next);
             merged = true;
         }

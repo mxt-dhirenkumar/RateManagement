@@ -34,6 +34,7 @@ public class Rate {
     @Positive
     private Integer nights;  // always >0
 
+    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookDateFrom; // when client registered this rate
 
