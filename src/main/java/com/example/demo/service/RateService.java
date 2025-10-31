@@ -24,6 +24,14 @@ public class RateService {
     @Transactional
     public Rate createRate(Rate rate) {
 
+        // Validation: booking date must be <= stay start date
+        if (rate.getBookDateFrom() != null && rate.getStayDateFrom() != null) {
+            if (rate.getBookDateFrom().toLocalDate().isAfter(rate.getStayDateFrom())) {
+                throw new IllegalArgumentException(
+                        "Booking date (bookDateFrom) cannot be after stay start date (stayDateFrom)."
+                );
+            }
+        }
         // Check for duplicates
         RateValidationUtil.checkDuplicate(rate, repository);
 
