@@ -38,8 +38,14 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
             Long bungalowId, LocalDate stayDateTo, LocalDate stayDateFrom);
 
     // 5️⃣ Find all active rates with the same value and nights overlapping a given date range
-    List<Rate> findByBungalowIdAndBookDateToIsNullAndValueAndNights(
-            Long bungalowId, Long value, Integer nights);
+    List<Rate> findByBungalowIdAndValueAndNightsAndBookDateToIsNullAndStayDateFromLessThanEqualAndStayDateToGreaterThanEqual(
+            Long bungalowId,
+            Long value,
+            Integer nights,
+            LocalDate stayDateFrom,
+            LocalDate stayDateTo
+    );
+
 
     // 6 Truncated query to find rates by booking date considering seconds
     @Query(value = """
@@ -54,5 +60,7 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
 """, nativeQuery = true)
     List<Rate> findRatesByBookingDateTruncated(@Param("bungalowId") Long bungalowId,
                                                @Param("bookingDate") String bookingDate);
+
+
 
 }
