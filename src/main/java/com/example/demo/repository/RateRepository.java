@@ -12,10 +12,18 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface RateRepository extends JpaRepository<Rate, Long> {
 
-    // 1️⃣ Find all active rates for a bungalow (bookDateTo is null), ordered by stayDateFrom
-    List<Rate> findByBungalowIdAndBookDateToIsNullOrderByStayDateFromAsc(Long bungalowId);
 
-    // 2️⃣ Find previous active rate (the closest one before new stayDateFrom)
+
+    /**
+     * Finds the most recent active rate for a bungalow that ends exactly one day before a new rate starts,
+     * with the same value and number of nights.
+     *
+     * @param bungalowId the ID of the bungalow
+     * @param stayDateFromMinusOne the date one day before the new rate's start date
+     * @param value the rate value
+     * @param nights the number of nights
+     * @return the previous active rate, if found
+     */
     Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateToEqualsAndValueAndNightsOrderByStayDateToDesc(
             Long bungalowId,
             LocalDate stayDateFromMinusOne, // previous.stayDateTo = newRate.stayDateFrom - 1
@@ -24,7 +32,16 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
     );
 
 
-    // 3️⃣ Find next active rate (the closest one after new stayDateTo)
+    /**
+     * Finds the next active rate for a bungalow that starts exactly one day after a new rate ends,
+     * with the same value and number of nights.
+     *
+     * @param bungalowId the ID of the bungalow
+     * @param stayDateToPlusOne the date one day after the new rate's end date
+     * @param value the rate value
+     * @param nights the number of nights
+     * @return the next active rate, if found
+     */
     Optional<Rate> findTopByBungalowIdAndBookDateToIsNullAndStayDateFromEqualsAndValueAndNightsOrderByStayDateFromAsc(
             Long bungalowId,
             LocalDate stayDateToPlusOne, // next.stayDateFrom = newRate.stayDateTo + 1
@@ -33,11 +50,30 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
     );
 
 
-    // 4️⃣ Find all active rates overlapping a given date range
+    /**
+     * Finds all active rates for a bungalow that overlap with a given date range.
+     * Only rates that are not booked (bookDateTo is null) are considered.
+     *
+     * @param bungalowId the ID of the bungalow
+     * @param stayDateTo the end date of the range
+     * @param stayDateFrom the start date of the range
+     * @return list of overlapping active rates
+     */
     List<Rate> findByBungalowIdAndBookDateToIsNullAndStayDateFromLessThanEqualAndStayDateToGreaterThanEqual(
             Long bungalowId, LocalDate stayDateTo, LocalDate stayDateFrom);
 
-    // 5️⃣ Find all active rates with the same value and nights overlapping a given date range
+
+    /**
+     * Finds all active rates for a bungalow with the same value and nights that overlap a given date range.
+     * Only rates that are not booked (bookDateTo is null) are considered.
+     *
+     * @param bungalowId the ID of the bungalow
+     * @param value the rate value
+     * @param nights the number of nights
+     * @param stayDateFrom the start date of the range
+     * @param stayDateTo the end date of the range
+     * @return list of matching overlapping active rates
+     */
     List<Rate> findByBungalowIdAndValueAndNightsAndBookDateToIsNullAndStayDateFromLessThanEqualAndStayDateToGreaterThanEqual(
             Long bungalowId,
             Long value,
@@ -47,7 +83,15 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
     );
 
 
-    // 6 Truncated query to find rates by booking date considering seconds
+    /**
+     * Finds all rates for a bungalow that are active at a specific booking date and time (to the second).
+     * Considers both open-ended and closed booking periods.
+     *
+     * @param bungalowId the ID of the bungalow
+     * @param bookingDate the booking date and time as a string (format: yyyy-MM-dd HH:mm:ss)
+     * @return list of rates active at the given booking date and time
+     */
+
     @Query(value = """
     SELECT *
     FROM rates

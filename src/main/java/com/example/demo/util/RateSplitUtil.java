@@ -54,6 +54,11 @@ public class RateSplitUtil {
                 right.setBookDateFrom(newRate.getBookDateFrom());
                 repository.save(right);
             }
+
+            if(oldRate.getBookDateFrom().isAfter(oldRate.getBookDateTo())) {
+                //  i delete this record as it is invalid now
+                repository.delete(oldRate);
+            }
         }
     }
 }

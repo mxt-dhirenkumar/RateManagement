@@ -16,9 +16,23 @@ public class RateCalculationService {
     @Autowired
     private RateRepository rateRepository;
 
+    /**
+     * Calculates the total price for a booking based on the provided rate calculation request.
+     * <p>
+     * Validates that the booking date is before the stay start date. It then retrieves all applicable rates
+     * for the bungalow at the given booking date, calculates the overlap in days between the requested stay
+     * and each rate's period, and sums up the total amount. If no rates are found, returns a response with
+     * a zero amount and an appropriate message.
+     * </p>
+     *
+     * @param request the rate calculation request containing bungalow ID, booking date, and stay period
+     * @return a response object with the bungalow ID, total calculated amount, and a status message
+     * @throws IllegalArgumentException if the booking date is not before the stay start date
+     */
 
     public RateCalculationResponse calculatePrice(RateCalculationRequest request) {
 
+        // Validate that booking date is before stay start date
         if (!request.getBookingDate().toLocalDate().isBefore(request.getStayDateFrom())) {
             throw new IllegalArgumentException("Booking date must be before stay start date");
         }

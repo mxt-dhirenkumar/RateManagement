@@ -14,6 +14,12 @@ public class RateCalculationController {
     @Autowired
     private RateCalculationService rateCalculationService;
 
+    /**
+     * Calculates the bill for a given rate calculation request.
+     *
+     * @param request the rate calculation request containing necessary details
+     * @return the calculated bill wrapped in a ResponseEntity
+     */
 
     @PostMapping("/calculate")
     public ResponseEntity<RateCalculationResponse> calculateBill(@RequestBody RateCalculationRequest request) {
