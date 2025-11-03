@@ -33,11 +33,12 @@ public class RateService {
 //            }
 //        }
 
-        // Check for duplicates
-        RateValidationUtil.checkDuplicate(rate, repository);
 
         // Normalize value and nights
         RateNormalizeUtil.normalize(rate);
+
+        // Check for duplicates
+        RateValidationUtil.checkDuplicate(rate, repository);
 
 
         // Find overlapping active rates
