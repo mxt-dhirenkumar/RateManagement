@@ -38,7 +38,7 @@ public class RateMergeUtil {
 
             if (newRate.getBookDateFrom().isBefore(prev.getBookDateFrom())) {
                 // special case: reverse booking date handling
-                handleReverseBookingDateCase(newRate, prev, repository);
+                handleReverseBookingDatePrev(newRate, prev, repository);
             } else {
                 // normal merge
                 newRate.setStayDateFrom(prev.getStayDateFrom());
@@ -54,7 +54,7 @@ public class RateMergeUtil {
 
             if (newRate.getBookDateFrom().isBefore(next.getBookDateFrom())) {
                 // special case: reverse booking date handling
-                handleReverseBookingDateCase(newRate, next, repository);
+                handleReverseBookingDateNext(newRate, next, repository);
             } else {
                 // normal merge
                 newRate.setStayDateTo(next.getStayDateTo());
@@ -78,17 +78,9 @@ public class RateMergeUtil {
      * - extend the neighbor’s stayDateFrom (or stayDateTo)
      * - close the new record properly
      */
-    private static void handleReverseBookingDateCase(Rate newRate, Rate neighbor, RateRepository repository) {
-        // Example case:
-        // neighbor.bookDateFrom = 15 Feb, newRate.bookDateFrom = 15 Jan
-        // neighbor.stayDateFrom = 1 Mar, newRate.stayDateTo = 28 Feb
+    private static Rate handleReverseBookingDatePrev(Rate newRate, Rate neighbor, RateRepository repository) {
 
-        // 1️⃣ Extend neighbor’s stayDateFrom backward
-        LocalDate newStart = newRate.getStayDateFrom().isBefore(neighbor.getStayDateFrom())
-                ? newRate.getStayDateFrom()
-                : neighbor.getStayDateFrom();
-
-        neighbor.setStayDateFrom(newStart);
+        neighbor.setStayDateTo(newRate.getStayDateTo());
 
         // 2️⃣ Close new record with neighbor's bookDateFrom
         newRate.setBookDateTo(neighbor.getBookDateFrom());
@@ -96,5 +88,21 @@ public class RateMergeUtil {
         // 3️⃣ Save both records
         repository.save(neighbor);
         repository.save(newRate);
+        return newRate;
     }
+
+
+    private static Rate handleReverseBookingDateNext(Rate newRate, Rate neighbor, RateRepository repository) {
+        // Only extend neighbor's stayDateFrom if it's before newRate's stayDateTo
+
+        neighbor.setStayDateFrom(newRate.getStayDateFrom());
+        // Set newRate's bookDateTo to neighbor's bookDateFrom
+        newRate.setBookDateTo(neighbor.getBookDateFrom());
+
+        // Save both records
+        repository.save(neighbor);
+        repository.save(newRate);
+        return newRate;
+    }
+
 }
