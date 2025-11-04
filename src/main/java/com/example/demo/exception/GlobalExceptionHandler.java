@@ -23,13 +23,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException ex, javax.servlet.http.HttpServletRequest request) {
         Map<String, Object> errorBody = new HashMap<>();
         errorBody.put("timestamp", LocalDateTime.now());
         errorBody.put("status", HttpStatus.BAD_REQUEST.value());
         errorBody.put("error", "Bad Request");
         errorBody.put("message", ex.getMessage());
-        errorBody.put("path", ""); // you can fill this dynamically if needed
+        errorBody.put("path", request.getRequestURI());
 
         return new ResponseEntity<>(errorBody, HttpStatus.BAD_REQUEST);
     }
