@@ -99,7 +99,7 @@ public interface RateRepository extends JpaRepository<Rate, Long> {
       AND (
             (DATE_FORMAT(book_date_from, '%Y-%m-%d %H:%i:%s') <= :bookingDate
              AND (book_date_to IS NOT NULL AND DATE_FORMAT(book_date_to, '%Y-%m-%d %H:%i:%s') >= :bookingDate))
-            OR (DATE_FORMAT(book_date_from, '%Y-%m-%d %H:%i:%s') < :bookingDate AND book_date_to IS NULL)
+            OR (DATE_FORMAT(book_date_from, '%Y-%m-%d %H:%i:%s') <= :bookingDate AND book_date_to IS NULL)
           )
 """, nativeQuery = true)
     List<Rate> findRatesByBookingDateTruncated(@Param("bungalowId") Long bungalowId,

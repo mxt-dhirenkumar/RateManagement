@@ -80,7 +80,7 @@ public class RateMergeUtil {
      */
     private static Rate handleReverseBookingDatePrev(Rate newRate, Rate neighbor, RateRepository repository) {
 
-        neighbor.setStayDateTo(newRate.getStayDateTo());
+        neighbor.setStayDateTo(newRate.getStayDateFrom().minusDays(1));
 
         // 2️⃣ Close new record with neighbor's bookDateFrom
         newRate.setBookDateTo(neighbor.getBookDateFrom());
@@ -94,8 +94,9 @@ public class RateMergeUtil {
 
     private static Rate handleReverseBookingDateNext(Rate newRate, Rate neighbor, RateRepository repository) {
         // Only extend neighbor's stayDateFrom if it's before newRate's stayDateTo
-
-        neighbor.setStayDateFrom(newRate.getStayDateFrom());
+        if (neighbor.getStayDateFrom().isBefore(newRate.getStayDateTo())) {
+            neighbor.setStayDateFrom(newRate.getStayDateFrom());
+        }
         // Set newRate's bookDateTo to neighbor's bookDateFrom
         newRate.setBookDateTo(neighbor.getBookDateFrom());
 

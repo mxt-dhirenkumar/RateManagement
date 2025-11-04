@@ -23,8 +23,6 @@ import java.util.List;
 public class RateSplitUtil {
 
     public static void splitIfOverlapping(Rate newRate, List<Rate> overlappingRates, RateRepository repository) {
-        //LocalDateTime now = LocalDateTime.now();
-
         for (Rate oldRate : overlappingRates) {
 
             // Close old rate
@@ -56,7 +54,7 @@ public class RateSplitUtil {
             }
 
             if(oldRate.getBookDateFrom().isAfter(oldRate.getBookDateTo())) {
-                //  i delete this record as it is invalid now
+                // Delete this record as it is invalid now
                 repository.delete(oldRate);
             }
         }
