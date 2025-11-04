@@ -50,6 +50,10 @@ public class RateCalculationService {
                 request.getStayDateTo()
         );
 
+        if(totalAmount == 0) {
+            return new RateCalculationResponse(request.getBungalowId(), 0L, "No applicable rates for the stay period.");
+        }
+
         return new RateCalculationResponse(request.getBungalowId(), totalAmount, "Price calculated successfully");
     }
 
